@@ -1,0 +1,16 @@
+<?php
+    //str will contain the alphabets and numbers range we want for our captcha
+    $str = str_shuffle('abcghz'.rand(1000,8888));
+    //imagecreate function to create image
+    $img = imagecreate(80,20);
+    //imagecolorallocate function , in the first time background color gets allocated
+    $bgcolor=imagecolorallocate($img,255,125,100);
+    //again using imagecolorallocate function, in the second time text color gets allocated
+    $textcolor=imagecolorallocate($img,0,0,0);
+    //imagestring function, syntax conveys values for
+    //imagestring(main image,fontsize,x- coordinate for string , y- coordinate for string,string iteself)
+    imagestring($img,6,0,0,$str,$textcolor);
+    //imagepng function to generate image in the source folder in png format
+    //imagepng(mainimage, name for the generated image)
+    imagepng($img,"a.png");
+    ?>
