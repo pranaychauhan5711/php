@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Add watermark</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+  </head>
+  <body>
+    <!-- form to get image and generate watermark using stringD-->
+    <form action="" enctype="multipart/form-data" method="post">
+    <label for="file">File</label>
+    <input type="file" name="file" id="" accept="image">
+    <br>
+    <input type='text' placeholder='Watermark-Text-Here' name='watermark'>
+    <input type="submit" value="upload">
+    </form>
+    <?php
+ob_start();
+// condition to get image on submit and file type of only png
+if($_SERVER['REQUEST_METHOD']=="POST" && $_FILES['file']['type']=="image/png" ){
+  //getting attributes and information of uploaded file via $_FILES function
+  $file = $_FILES['file']['name'];
+  $type=$_FILES['file']['type'];
+  $size=$_FILES['file']['size'];
+  $error=$_FILES['file']['error'];
+  $tmp_name=$_FILES['file']['tmp_name'];
+  echo $tmp_name;
+//echo $size;
+  echo $type;
+  $location="./".$file;
+  //moving uploaded file in the desired location from the xammp temprorary image folder
+  move_uploaded_file($tmp_name,$location);
+//echo "move uploaded done";
+
+//image creation for watermark
+
+// creating destination-object in the variable using imagecreatefromfiletype
+
+$main = imagecreatefrompng("$file");
+//creating source-object or watermark
+$str = $_POST['watermark'];
+$img = imagecreate(250,100);
+$bg = imagecolorallocate($img,15,250,165);
+$textcolor= imagecolorallocate($img,0,0,0);
+imagestring($img,6,0,0,$str,$textcolor);
+imagepng($img,'watermark'.$file);
+
+$water = imagecreatefrompng("watermark".$file);
+//assinging width-height attribute by extracting original values form destination image
+$main_width = imagesx($main);
+$main_height = imagesy($main);
+
+// assinging width-height attribute by extracting original values from source image
+$water_width = imagesx($water);
+$water_height = imagesy($water);
+
+// merging both the destination followed by source via imagecopymerge function
+//imagecopymerge(destination resource, source resource, x coordinate for source to be placed inside destination, y coordinate for source to be placed inside destination,x coordinate for source , y coodinate for source, source width , source height, opacity of source resource )
+
+imagecopymerge($main,$water,$main_width-$water_width-80,$main_height-$water_height-50,0,0,$water_width+100,$water_height*1.5,50);
+imagejpeg($main,$file);
+
+
+
+}
+else{
+  echo "upload only png filetype";
+}
+?>
+<H1>Namaste</H1>
+<!-- ON screen display by img tag -->
+<img src="<?PHP echo $file;  ?>" alt="">
+    <script src="" async defer></script>
+  </body>
+</html>
+
+
+
